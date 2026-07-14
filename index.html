@@ -65,10 +65,10 @@
 
   /* ---------- HERO ---------- */
   .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 90px;overflow:hidden;}
-  .hero__bg{position:absolute;inset:0;background:url('assets/bg-embers.jpg') center/cover no-repeat;opacity:.62;z-index:-1;
-    transform:scale(1.08);animation:drift 22s ease-in-out infinite alternate;}
-  @keyframes drift{to{transform:scale(1.16) translateY(-2%)}}
-  .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,8,6,.55),rgba(10,8,6,.2) 40%,rgba(10,8,6,.85));}
+  .hero__flag{position:absolute;inset:0;width:100%;height:100%;z-index:-2;display:block;}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(120% 92% at 50% 46%,rgba(10,8,6,.76),rgba(10,8,6,.42) 52%,rgba(10,8,6,.14) 100%),
+      linear-gradient(180deg,rgba(10,8,6,.5),transparent 26%,rgba(10,8,6,.82));}
   .hero .eyebrow{font-family:var(--fdisplay);font-weight:600;font-size:12.5px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;}
   .flagrule{width:min(520px,74vw);height:7px;border-radius:4px;margin:0 auto 34px;
     background:linear-gradient(90deg,var(--crimson) 0 28%,var(--gold) 28% 72%,var(--crimson) 72% 100%);
@@ -80,10 +80,14 @@
   .hero h1 .fr::after{content:"";position:absolute;left:-2%;right:-2%;top:52%;height:3px;background:var(--crimson);opacity:.8;transform:rotate(-3deg);box-shadow:0 0 14px var(--crimson);}
   .hero .lede{font-family:var(--fhead);font-style:italic;font-weight:500;font-size:clamp(19px,2.6vw,31px);color:var(--ember);margin-top:22px;letter-spacing:.01em;}
   .hero .score-line{margin-top:30px;font-family:var(--fdisplay);font-size:12px;letter-spacing:.30em;text-transform:uppercase;color:var(--bone-dim);}
-  .scrollcue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;
-    font-family:var(--fdisplay);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);}
-  .scrollcue .ln{width:1px;height:44px;background:linear-gradient(var(--flame),transparent);animation:cue 1.9s var(--ease) infinite;transform-origin:top;}
-  @keyframes cue{0%,100%{transform:scaleY(.35);opacity:.35}50%{transform:scaleY(1);opacity:1}}
+  .scrollcue{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:18px;
+    font-family:var(--fdisplay);font-size:18px;font-weight:600;letter-spacing:.54em;text-transform:uppercase;color:var(--flame);
+    text-indent:.54em;animation:glowpulse 2.6s ease-in-out infinite;}
+  .scrollcue .ln{position:relative;width:2px;height:70px;border-radius:2px;background:linear-gradient(var(--flame),rgba(240,162,59,0));}
+  .scrollcue .ln::after{content:"";position:absolute;left:50%;top:0;width:8px;height:8px;border-radius:50%;transform:translateX(-50%);
+    background:radial-gradient(circle,#fff6e0,var(--flame) 45%,rgba(210,74,31,0) 75%);box-shadow:0 0 14px var(--flame);animation:emberdrop 2.2s var(--ease) infinite;}
+  @keyframes glowpulse{0%,100%{opacity:.72;text-shadow:0 0 18px rgba(240,162,59,.4)}50%{opacity:1;text-shadow:0 0 34px rgba(240,162,59,.8)}}
+  @keyframes emberdrop{0%{top:0;opacity:0}12%{opacity:1}86%{opacity:1}100%{top:70px;opacity:0}}
 
   /* ---------- INTRO ---------- */
   .intro{text-align:center;padding:clamp(80px,12vh,150px) 24px 40px;position:relative;}
@@ -112,7 +116,13 @@
   @media(prefers-reduced-motion:reduce){.flame__core{animation:none}.hero__bg{animation:none}}
 
   .panel{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,90px);align-items:center;
-    padding:clamp(56px,9vw,120px) 0;z-index:1;}
+    padding:clamp(64px,10vw,140px) 0;z-index:1;}
+  .panel__bg{position:absolute;left:50%;top:-18%;width:122%;height:136%;transform:translateX(-50%);z-index:-1;
+    background-position:center;background-size:cover;opacity:0;transition:opacity 1.6s var(--ease);
+    filter:saturate(.9) brightness(.66);pointer-events:none;will-change:transform;}
+  .panel.inview .panel__bg{opacity:.42;}
+  .panel::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(85% 75% at 50% 50%,rgba(10,8,6,.45),rgba(10,8,6,.86) 92%);}
   .panel:nth-child(even) .p-text{order:1;text-align:right;}
   .panel:nth-child(even) .p-media{order:2;}
   .panel:nth-child(even) .p-orn{justify-content:flex-end;}
@@ -180,7 +190,7 @@
 
 <div class="content" id="top">
   <header class="hero">
-    <div class="hero__bg"></div>
+    <canvas class="hero__flag" id="flag"></canvas>
     <div class="eyebrow">FIFA World Cup 2026 · Semifinal · Dallas</div>
     <div class="flagrule"></div>
     <h1>España <span class="score">2&nbsp;–&nbsp;0</span> <span class="fr">France</span></h1>
@@ -228,9 +238,11 @@ const MEMES=[
 ];
 
 const gallery=document.getElementById('gallery');
+const BG=['sec-stadium.jpg','sec-alhambra.jpg','sec-bullring.jpg','sec-madrid.jpg','sec-flamenco.jpg'];
 MEMES.forEach((m,i)=>{
   const el=document.createElement('article'); el.className='panel';
   el.innerHTML=`
+    <div class="panel__bg" style="background-image:url(assets/${BG[i%BG.length]})"></div>
     <div class="p-media reveal"><div class="frame" data-idx="${i}"><img src="${m.f}" alt="${m.t.join(' ')}" loading="lazy"><div class="frame__spark"></div></div></div>
     <div class="p-text reveal">
       <div class="p-num">${m.n}${m.bonus?' · <span class="bonus">Bonus</span>':''}</div>
@@ -244,6 +256,46 @@ MEMES.forEach((m,i)=>{
 
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.16});
 document.querySelectorAll('.reveal').forEach(n=>io.observe(n));
+const io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('inview');}),{threshold:.12});
+document.querySelectorAll('.panel').forEach(n=>io2.observe(n));
+
+/* ---------- HERO: UNDULATING SPANISH FLAG (slow wave + cursor ripple) ---------- */
+(function flag(){
+  const cv=document.getElementById('flag');if(!cv)return;
+  const gl=cv.getContext('webgl2',{alpha:true,antialias:true});if(!gl)return;
+  const vs=`#version 300 es
+  precision highp float;in vec2 p;out vec2 vUv;void main(){vUv=vec2(p.x*0.5+0.5,0.5-p.y*0.5);gl_Position=vec4(p,0.0,1.0);}`;
+  const fs=`#version 300 es
+  precision highp float;in vec2 vUv;out vec4 o;uniform sampler2D tex;uniform float uT;uniform vec2 uM;uniform float uMA;uniform vec2 uRes;
+  void main(){vec2 uv=vUv;float t=uT*0.11;
+    uv.x+=0.014*sin(uv.y*7.0+t*3.0)+0.008*sin(uv.y*15.0-t*2.0);
+    uv.y+=0.011*sin(uv.x*6.0+t*2.4)+0.006*cos(uv.x*12.0+t*1.6);
+    vec2 asp=vec2(uRes.x/uRes.y,1.0);float d=distance(vUv*asp,uM*asp);
+    float ring=sin(d*24.0-uT*3.0)*exp(-d*6.5)*uMA;
+    uv+=normalize(vUv-uM+1e-4)*ring*0.05;
+    vec3 col=texture(tex,uv).rgb;
+    float sh=0.5+0.5*sin(uv.y*9.0+t*3.0);col*=0.80+0.15*sh;
+    col+=vec3(0.20,0.13,0.03)*max(ring,0.0)*2.2;
+    o=vec4(col,1.0);}`;
+  function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const lp=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,0,0);
+  const U={t:gl.getUniformLocation(pr,'uT'),m:gl.getUniformLocation(pr,'uM'),ma:gl.getUniformLocation(pr,'uMA'),res:gl.getUniformLocation(pr,'uRes'),tex:gl.getUniformLocation(pr,'tex')};
+  const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([120,20,20,255]));
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  const img=new Image();img.src='assets/flag-spain.jpg';img.onload=()=>{gl.bindTexture(gl.TEXTURE_2D,tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);};
+  const dpr=Math.min(devicePixelRatio||1,2);
+  function res(){const r=cv.getBoundingClientRect();cv.width=Math.max(2,r.width*dpr|0);cv.height=Math.max(2,r.height*dpr|0);}
+  res();addEventListener('resize',res);addEventListener('load',res);
+  let mx=0.5,my=0.4,ma=0;const hero=document.querySelector('.hero');
+  hero.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();mx=(e.clientX-r.left)/r.width;my=(e.clientY-r.top)/r.height;ma=Math.min(ma+0.10,0.85);},{passive:true});
+  (function draw(now){ma*=0.965;gl.viewport(0,0,cv.width,cv.height);gl.useProgram(pr);
+    gl.uniform1f(U.t,now/1000);gl.uniform2f(U.m,mx,my);gl.uniform1f(U.ma,ma);gl.uniform2f(U.res,cv.width,cv.height);gl.uniform1i(U.tex,0);
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);gl.drawArrays(gl.TRIANGLES,0,6);requestAnimationFrame(draw);})(0);
+})();
 
 addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',scrollY>40);},{passive:true});
 
@@ -267,6 +319,9 @@ function updateFlame(){
   panels.forEach(p=>{
     const c=p.offsetTop+p.offsetHeight/2;
     p.classList.toggle('lit',Math.abs(c-y)<p.offsetHeight*0.42);
+    const bg=p.firstElementChild;
+    if(bg&&bg.classList.contains('panel__bg')){const rt=p.getBoundingClientRect().top;
+      bg.style.transform='translateX(-50%) translateY('+(rt*0.14).toFixed(1)+'px)';}
   });
 }
 
@@ -339,7 +394,7 @@ const glc=document.getElementById('gl');
   precision highp float;in vec2 vUv;in float vVel;uniform sampler2D uTex;uniform float uHover;uniform vec2 uHoverUv;
   uniform float uTime;uniform float uParallax;uniform float uLit;out vec4 frag;
   void main(){
-    vec2 uv=(vUv-0.5)*0.94+0.5;      // slight overscan for parallax headroom
+    vec2 uv=(vUv-0.5)*0.90+0.5;      // overscan for parallax headroom
     uv.y+=uParallax;                 // vertical parallax drift
     float d=distance(vUv,uHoverUv);
     float ripple=sin(d*26.0-uTime*4.5)*exp(-d*8.0)*uHover*0.008;
@@ -384,7 +439,7 @@ const glc=document.getElementById('gl');
       gl.bindBuffer(gl.ARRAY_BUFFER,posBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([x0,y0,x1,y0,x0,y1,x0,y1,x1,y0,x1,y1]),gl.DYNAMIC_DRAW);
       gl.enableVertexAttribArray(aPos);gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,uvBuf);gl.enableVertexAttribArray(aUv);gl.vertexAttribPointer(aUv,2,gl.FLOAT,false,0,0);
-      const centerN=(r.top+r.height/2)/innerHeight;const parallax=(centerN-0.5)*0.035;
+      const centerN=(r.top+r.height/2)/innerHeight;const parallax=(centerN-0.5)*0.06;
       let hv=0,hu=0.5,hvv=0.5;
       if(P.mx>=r.left&&P.mx<=r.right&&P.my>=r.top&&P.my<=r.bottom){hv=1;hu=(P.mx-r.left)/r.width;hvv=1-(P.my-r.top)/r.height;}
       fr._h=(fr._h||0)+(hv-(fr._h||0))*0.1;
