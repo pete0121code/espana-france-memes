@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>España 2 – 0 France · The Custom Troll Process</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bone:#F2EADB; --parchment:#F7F2E8; --paper:#EBE2D0;
+    --gold:#B8893A; --gold-soft:#D6B77A; --gold-bright:#E8C77E;
+    --sangria:#650002; --crimson:#A80001; --burgundy:#4B0000; --char:#400000;
+    --smores:#101113; --ink:#2A1A12; --raw-umber:#6C330C; --schist:#868077;
+    --bone-line:#E2DFDA;
+    --font-display:"Cinzel","Trajan Pro",Georgia,serif;
+    --font-serif:"EB Garamond","Cormorant Garamond","Iowan Old Style",Georgia,serif;
+    --font-head:"Cormorant Garamond","Cinzel",Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font-serif);
+    color:var(--ink);
+    background:var(--parchment);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* fixed canvases */
+  #bg,#gl{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;}
+  #bg{z-index:0;}
+  #gl{z-index:5;}
+  .content{position:relative;z-index:2;}
+
+  /* subtle parchment grain over everything */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(184,137,58,.10), transparent 60%),
+      radial-gradient(120% 120% at 50% 110%, rgba(101,0,2,.10), transparent 60%);
+  }
+
+  /* ---------- shared bits ---------- */
+  .wrap{max-width:1240px;margin:0 auto;padding:0 40px;}
+  .orn{display:flex;align-items:center;justify-content:center;gap:16px;margin:20px auto 0;}
+  .orn__line{width:clamp(60px,12vw,160px);height:1px;background:var(--gold);opacity:.75;}
+  .orn__dia{width:9px;height:9px;background:var(--gold);transform:rotate(45deg);flex:0 0 auto;}
+  .orn__cap{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--raw-umber);}
+  .kicker{font-family:var(--font-display);font-weight:600;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);text-align:center;}
+
+  /* ---------- hero ---------- */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;}
+  .hero .flag-rule{width:min(560px,80vw);height:6px;border-radius:3px;margin:0 auto 30px;
+    background:linear-gradient(90deg,var(--sangria) 0 33%,var(--gold) 33% 66%,var(--sangria) 66% 100%);
+    box-shadow:0 2px 20px rgba(101,0,2,.25);}
+  .hero h1{font-family:var(--font-display);font-weight:800;color:var(--sangria);
+    font-size:clamp(46px,10vw,132px);line-height:.94;letter-spacing:.02em;text-transform:uppercase;
+    text-shadow:0 2px 0 rgba(184,137,58,.18);}
+  .hero h1 .score{color:var(--gold);display:inline-block;}
+  .hero .sub{font-family:var(--font-head);font-style:italic;font-size:clamp(19px,2.6vw,30px);color:var(--raw-umber);margin-top:14px;letter-spacing:.01em;}
+  .hero .meta{margin-top:26px;font-family:var(--font-display);font-size:12.5px;letter-spacing:.30em;text-transform:uppercase;color:var(--schist);}
+  .scrollcue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);font-family:var(--font-display);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.85;}
+  .scrollcue .dot{width:1px;height:46px;background:linear-gradient(var(--gold),transparent);animation:cue 1.9s ease-in-out infinite;}
+  @keyframes cue{0%,100%{transform:scaleY(.4);opacity:.4;transform-origin:top}50%{transform:scaleY(1);opacity:1;transform-origin:top}}
+
+  /* ---------- process intro band ---------- */
+  .band{padding:96px 0;position:relative;}
+  .band--bone{background:linear-gradient(var(--bone),var(--parchment));}
+  .sechead{text-align:center;margin-bottom:10px;}
+  .sectitle{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4.2vw,46px);letter-spacing:.06em;text-transform:uppercase;color:var(--sangria);line-height:1.06;}
+  .lede{max-width:640px;margin:26px auto 0;text-align:center;font-family:var(--font-head);font-size:clamp(17px,2vw,21px);line-height:1.6;color:var(--ink);}
+  .lede em{color:var(--sangria);font-style:italic;}
+
+  /* ---------- meme gallery ---------- */
+  .gallery{padding:40px 0 40px;}
+  .meme{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,80px);align-items:center;
+    max-width:1180px;margin:0 auto;padding:clamp(48px,7vw,96px) 40px;position:relative;}
+  .meme + .meme{border-top:1px solid var(--bone-line);}
+  .meme:nth-child(even) .meme__text{order:1;}
+  .meme:nth-child(even) .meme__media{order:2;}
+  .meme__media{position:relative;}
+  .frame{position:relative;aspect-ratio:4/5;border-radius:4px;overflow:hidden;
+    box-shadow:0 30px 60px -30px rgba(64,0,0,.55), 0 2px 0 rgba(184,137,58,.4);
+    outline:1px solid rgba(184,137,58,.45);outline-offset:6px;background:var(--paper);}
+  .frame img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .5s ease;}
+  body.gl-on .frame img{opacity:0;} /* WebGL draws the image; DOM img is fallback */
+  .frame .shimmer{position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(214,183,122,.25) 50%,transparent 70%);background-size:220% 100%;animation:sh 2.4s linear infinite;}
+  @keyframes sh{to{background-position:-220% 0}}
+
+  .meme__num{font-family:var(--font-display);font-weight:700;font-size:14px;letter-spacing:.34em;color:var(--gold);}
+  .meme__title{font-family:var(--font-head);font-weight:600;font-size:clamp(30px,3.6vw,46px);line-height:1.05;color:var(--sangria);margin:10px 0 4px;}
+  .meme__title .amp{font-style:italic;color:var(--gold);}
+  .meme__mini-orn{display:flex;align-items:center;gap:12px;margin:16px 0 18px;}
+  .meme__mini-orn .l{width:64px;height:1px;background:var(--gold);opacity:.7;}
+  .meme__mini-orn .d{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);}
+  .meme__body{font-size:clamp(17px,1.5vw,20px);line-height:1.68;color:var(--ink);max-width:44ch;}
+  .meme__cap{margin-top:16px;font-family:var(--font-display);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--schist);}
+
+  .reveal{opacity:0;transform:translateY(34px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* ---------- footer ---------- */
+  .foot{background:var(--smores);color:var(--gold-soft);text-align:center;padding:80px 24px 90px;position:relative;z-index:2;}
+  .foot .crest{font-family:var(--font-display);font-weight:800;color:var(--gold);font-size:clamp(30px,5vw,60px);letter-spacing:.04em;text-transform:uppercase;}
+  .foot .crest .b{color:#fff;}
+  .foot p{font-family:var(--font-head);font-style:italic;font-size:19px;margin-top:14px;color:#cdbfa2;}
+  .foot .fine{margin-top:30px;font-family:var(--font-display);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:#7a6f5b;line-height:2;}
+
+  /* gpu badge */
+  .badge{position:fixed;bottom:14px;right:16px;z-index:20;font-family:var(--font-display);
+    font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
+    background:rgba(16,17,19,.78);padding:7px 12px;border-radius:100px;border:1px solid rgba(184,137,58,.4);
+    display:flex;align-items:center;gap:7px;backdrop-filter:blur(6px);}
+  .badge .led{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold-bright);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{50%{opacity:.4}}
+
+  @media(max-width:820px){
+    .meme{grid-template-columns:1fr;gap:26px;}
+    .meme:nth-child(even) .meme__text,.meme:nth-child(even) .meme__media{order:0;}
+    .meme__body{max-width:none;}
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<canvas id="gl"></canvas>
+
+<div class="content">
+  <!-- HERO -->
+  <header class="hero">
+    <div class="flag-rule"></div>
+    <div class="kicker">FIFA World Cup 2026 · Semi-Final · Dallas</div>
+    <h1>España <span class="score">2&nbsp;–&nbsp;0</span> France</h1>
+    <div class="sub">A sophisticated study in schadenfreude.</div>
+    <div class="orn"><span class="orn__line"></span><span class="orn__dia"></span><span class="orn__cap">The Custom Troll Process</span><span class="orn__dia"></span><span class="orn__line"></span></div>
+    <div class="meta">Oyarzabal 21′ (pen) · Porro 58′</div>
+    <div class="scrollcue"><span>Scroll</span><span class="dot"></span></div>
+  </header>
+
+  <!-- PROCESS INTRO -->
+  <section class="band band--bone">
+    <div class="wrap">
+      <div class="sechead">
+        <div class="kicker" style="margin-bottom:14px;">Eleven Panels · Handmade With Malice</div>
+        <h2 class="sectitle">The Gallery of Gentle Cruelty</h2>
+        <div class="orn"><span class="orn__line"></span><span class="orn__dia"></span><span class="orn__cap">Est. 21st Minute</span><span class="orn__dia"></span><span class="orn__line"></span></div>
+      </div>
+      <p class="lede">Every panel is grounded in fact — a <em>penalty won</em>, a <em>score kept</em>, a <em>flight home booked early</em> — then dressed in oil paint, fine dining, and Spanish wine. Hover a piece to watch it ripple; scroll to feel the room lean.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY (memes injected by JS) -->
+  <main class="gallery" id="gallery"></main>
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <div class="crest">¡Olé! <span class="b">·</span> To The Final</div>
+    <p>Rendered in red and gold. Reflected upon in blue.</p>
+    <div class="orn"><span class="orn__line"></span><span class="orn__dia"></span><span class="orn__cap">España · Mundial 2026</span><span class="orn__dia"></span><span class="orn__line"></span></div>
+    <div class="fine">11 panels · WebGL planes + WebGPU confetti · Nano Banana Pro<br>Good-natured football banter. No Frenchmen were harmed, only ranked.</div>
+  </footer>
+</div>
+
+<div class="badge"><span class="led"></span><span id="gpu-mode">initialising…</span></div>
+
+<script>
+/* ============================================================
+   DATA — the eleven (+ bonus) panels
+   ============================================================ */
+const MEMES = [
+  {f:"assets/01-eiffel-new-management.jpg", n:"Panel I",  t:["New","Management"],    b:"Paris, re-lit in red and gold. Ownership transferred at the twenty-first minute; the paperwork was a penalty.", c:"Oil of light on iron · Champ de Mars"},
+  {f:"assets/02-sommelier-rioja-tears.jpg", n:"Panel II", t:["A Bitter","Vintage"],  b:"The last cellar in the arrondissement pours only Spanish now. A distinguished sommelier weeps into a glass of Rioja.", c:"Rembrandt lighting · notes of defeat"},
+  {f:"assets/03-parisian-toast-rioja.jpg", n:"Panel III",t:["The Forced","Toast"],   b:"On a rooftop beneath the Tower, the terrace raises a Spanish red. “Santé…” — a pause — “…I mean, Salud.”", c:"Rioja · España · served chilled"},
+  {f:"assets/04-michelin-2-0-served.jpg",   n:"Panel IV", t:["A Two-Course","Tasting"],b:"Plated with tweezers, a scoreline in saffron and jamón. France was served twice and returned no reply.", c:"Three stars · zero points"},
+  {f:"assets/05-mona-lisa-spain-jersey.jpg",n:"Panel V",  t:["She","Knew"],           b:"Five centuries of that ambiguous smile. Tonight, in a red shirt, it finally resolves into something smug.", c:"Sfumato · Salle des États"},
+  {f:"assets/06-rodin-thinker-france.jpg",  n:"Panel VI", t:["Le","Penseur"],         b:"Cast in bronze and blue, deep in thought: still working out how one man is meant to outscore a team of eleven.", c:"Bronze · a very long think"},
+  {f:"assets/07-dallas-early-departure.jpg",n:"Panel VII",t:["An Early","Departure"], b:"The board flickers. Les Bleus — Gate: Home. Status, for once this tournament, punctual.", c:"DFW · split-flap · one-way"},
+  {f:"assets/08-chess-checkmate-21-58.jpg", n:"Panel VIII",t:["Mate in","Two"],       b:"Twenty-first minute, an opening. Fifty-eighth, a closing. No middlegame was found to be necessary.", c:"Red to move · Red to win"},
+  {f:"assets/09-french-retreat-painting.jpg",n:"Panel IX",t:["A Familiar","Retreat"], b:"Oil on canvas, in the grandest national tradition: the dignified, well-documented strategic withdrawal.", c:"History painting · Salon rejected"},
+  {f:"assets/10-trophy-spanish-ribbons.jpg",n:"Panel X",  t:["RSVP","Accepted"],      b:"The final issued a single invitation, ribboned in red and gold. It was addressed, of course, to Madrid.", c:"Gilt · ribbon · the Tower, dimmed"},
+  {f:"assets/11-matador-france-bull.jpg",   n:"Panel XI", t:["Olé","·"],              b:"The blue bull charges, stumbles, and trips upon its own hooves. The penalty, as ever, draws itself.", c:"Traje de luces · faena in two acts", bonus:true},
+];
+
+/* ============================================================
+   BUILD DOM
+   ============================================================ */
+const gallery = document.getElementById('gallery');
+MEMES.forEach((m,i)=>{
+  const el = document.createElement('article');
+  el.className='meme';
+  el.innerHTML = `
+    <div class="meme__media reveal">
+      <div class="frame" data-idx="${i}">
+        <img src="${m.f}" alt="${m.t.join(' ')}" loading="lazy" />
+        <div class="shimmer"></div>
+      </div>
+    </div>
+    <div class="meme__text reveal">
+      <div class="meme__num">${m.n}${m.bonus?' · Bonus':''}</div>
+      <h3 class="meme__title">${m.t[0]} <span class="amp">${m.t[1]}</span></h3>
+      <div class="meme__mini-orn"><span class="l"></span><span class="d"></span></div>
+      <p class="meme__body">${m.b}</p>
+      <div class="meme__cap">${m.c}</div>
+    </div>`;
+  gallery.appendChild(el);
+});
+
+/* reveal on scroll */
+const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:.18});
+document.querySelectorAll('.reveal').forEach(n=>io.observe(n));
+
+/* ============================================================
+   SCROLL VELOCITY + POINTER
+   ============================================================ */
+const P = { scrollY:window.scrollY, vel:0, mx:-1, my:-1 };
+addEventListener('scroll',()=>{ const y=window.scrollY; P.vel += (y-P.scrollY); P.scrollY=y; },{passive:true});
+addEventListener('pointermove',e=>{ P.mx=e.clientX; P.my=e.clientY; },{passive:true});
+addEventListener('pointerleave',()=>{P.mx=-1;P.my=-1;});
+
+/* ============================================================
+   WEBGL2 MEME PLANES  (DOM-synced textured quads + distortion)
+   ============================================================ */
+const glCanvas = document.getElementById('gl');
+let GL_OK=false;
+(function initGallery(){
+  const gl = glCanvas.getContext('webgl2',{alpha:true,premultipliedAlpha:false,antialias:true});
+  if(!gl){ return; } // fallback: DOM <img> stays visible
+  const vs = `#version 300 es
+  precision highp float;
+  in vec2 aPos;  // pixel coords (viewport top-left origin)
+  in vec2 aUv;
+  uniform vec2 uRes;
+  uniform float uVel;   // scroll velocity
+  uniform float uTime;
+  uniform float uHover; // 0..1 for this plane
+  out vec2 vUv;
+  out float vVel;
+  void main(){
+    vUv=aUv; vVel=uVel;
+    vec2 p=aPos;
+    // gentle wave across plane driven by scroll velocity + idle breathing
+    float wave = sin(aUv.y*6.2831 + uTime*1.2) * (uVel*0.015);
+    float breathe = sin(uTime*0.9 + aUv.x*3.0) * (0.25 + uHover*1.4);
+    p.x += wave + breathe;
+    p.y += cos(aUv.x*6.2831 + uTime*1.1)*(uVel*0.008);
+    // to clip space
+    vec2 clip = (p/uRes)*2.0 - 1.0;
+    clip.y = -clip.y;
+    gl_Position=vec4(clip,0.0,1.0);
+  }`;
+  const fs = `#version 300 es
+  precision highp float;
+  in vec2 vUv; in float vVel;
+  uniform sampler2D uTex;
+  uniform float uHover;
+  uniform vec2 uHoverUv;
+  uniform float uTime;
+  out vec4 frag;
+  void main(){
+    vec2 uv=vUv;
+    // hover ripple
+    float d=distance(uv,uHoverUv);
+    float ripple = sin(d*30.0 - uTime*5.0) * exp(-d*7.0) * uHover * 0.012;
+    vec2 dir = normalize(uv-uHoverUv+1e-4);
+    uv += dir*ripple;
+    // chromatic aberration scaled by velocity + hover
+    float ca = clamp(abs(vVel)*0.00035 + uHover*0.0035, 0.0, 0.006);
+    vec2 off=vec2(ca,0.0);
+    float r=texture(uTex,uv+off).r;
+    float g=texture(uTex,uv).g;
+    float b=texture(uTex,uv-off).b;
+    vec3 col=vec3(r,g,b);
+    // warm gold sheen on hover
+    col += vec3(0.10,0.07,0.0)*uHover*smoothstep(0.6,0.0,d);
+    // rounded-corner mask
+    vec2 q=abs(uv-0.5)*2.0;
+    float corner=length(max(q-vec2(0.965),0.0));
+    float a=1.0-smoothstep(0.0,0.03,corner-0.0);
+    frag=vec4(col,a);
+  }`;
+  function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+    if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(o));} return o;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(prog));return;}
+  gl.useProgram(prog);
+
+  const aPos=gl.getAttribLocation(prog,'aPos');
+  const aUv=gl.getAttribLocation(prog,'aUv');
+  const U={res:gl.getUniformLocation(prog,'uRes'),vel:gl.getUniformLocation(prog,'uVel'),
+    time:gl.getUniformLocation(prog,'uTime'),hover:gl.getUniformLocation(prog,'uHover'),
+    hoverUv:gl.getUniformLocation(prog,'uHoverUv'),tex:gl.getUniformLocation(prog,'uTex')};
+
+  const posBuf=gl.createBuffer(), uvBuf=gl.createBuffer();
+  const UVS=new Float32Array([0,0, 1,0, 0,1, 0,1, 1,0, 1,1]);
+  gl.bindBuffer(gl.ARRAY_BUFFER,uvBuf); gl.bufferData(gl.ARRAY_BUFFER,UVS,gl.STATIC_DRAW);
+
+  // textures
+  const frames=[...document.querySelectorAll('.frame')];
+  const texByIdx={};
+  frames.forEach(fr=>{
+    const idx=+fr.dataset.idx;
+    const img=fr.querySelector('img');
+    const tex=gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,tex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([235,226,208,255]));
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    const rec={tex,ready:false};
+    texByIdx[idx]=rec;
+    const load=()=>{ try{
+      gl.bindTexture(gl.TEXTURE_2D,tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+      rec.ready=true;
+    }catch(e){} };
+    if(img.complete && img.naturalWidth) load(); else img.addEventListener('load',load);
+  });
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  GL_OK=true; document.body.classList.add('gl-on');
+
+  let dpr=1;
+  function resize(){ dpr=Math.min(devicePixelRatio||1,2);
+    glCanvas.width=innerWidth*dpr; glCanvas.height=innerHeight*dpr;
+  }
+  resize(); addEventListener('resize',resize);
+
+  let last=performance.now();
+  function draw(now){
+    const dt=Math.min((now-last)/1000,0.05); last=now;
+    P.vel*=0.86; // decay velocity
+    const t=now/1000;
+    gl.viewport(0,0,glCanvas.width,glCanvas.height);
+    gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(prog);
+    gl.uniform2f(U.res,glCanvas.width,glCanvas.height);
+    gl.uniform1f(U.time,t);
+    const vc=Math.max(-60,Math.min(60,P.vel));
+    gl.uniform1f(U.vel,vc);
+    gl.uniform1i(U.tex,0);
+    gl.activeTexture(gl.TEXTURE0);
+
+    for(const fr of frames){
+      const idx=+fr.dataset.idx; const rec=texByIdx[idx];
+      const r=fr.getBoundingClientRect();
+      if(r.bottom<-40||r.top>innerHeight+40) continue; // cull offscreen
+      if(!rec||!rec.ready) continue;
+      // pixel quad (device px)
+      const x0=r.left*dpr, y0=r.top*dpr, x1=r.right*dpr, y1=r.bottom*dpr;
+      const POS=new Float32Array([x0,y0, x1,y0, x0,y1, x0,y1, x1,y0, x1,y1]);
+      gl.bindBuffer(gl.ARRAY_BUFFER,posBuf); gl.bufferData(gl.ARRAY_BUFFER,POS,gl.DYNAMIC_DRAW);
+      gl.enableVertexAttribArray(aPos); gl.vertexAttribPointer(aPos,2,gl.FLOAT,false,0,0);
+      gl.bindBuffer(gl.ARRAY_BUFFER,uvBuf);
+      gl.enableVertexAttribArray(aUv); gl.vertexAttribPointer(aUv,2,gl.FLOAT,false,0,0);
+      // hover
+      let hv=0, hu=0.5, hvv=0.5;
+      if(P.mx>=r.left&&P.mx<=r.right&&P.my>=r.top&&P.my<=r.bottom){
+        hv=1; hu=(P.mx-r.left)/r.width; hvv=1-(P.my-r.top)/r.height;
+      }
+      fr._h=(fr._h||0)+ (hv-(fr._h||0))*0.12; // smooth
+      gl.uniform1f(U.hover,fr._h);
+      gl.uniform2f(U.hoverUv,hu,hvv);
+      gl.bindTexture(gl.TEXTURE_2D,rec.tex);
+      gl.drawArrays(gl.TRIANGLES,0,6);
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ============================================================
+   CONFETTI BACKGROUND — WebGPU (preferred) → WebGL fallback
+   ============================================================ */
+const bg=document.getElementById('bg');
+const GOLD=[0.72,0.54,0.23], SANG=[0.40,0.0,0.01], CRIM=[0.66,0.0,0.0], CREAM=[0.86,0.78,0.62];
+const COLORS=[GOLD,SANG,CRIM,GOLD,CREAM,GOLD];
+const N=140;
+const parts=[];
+function seed(){ for(let i=0;i<N;i++){ parts.push({
+  x:Math.random(), y:Math.random(), s:6+Math.random()*16,
+  vx:(Math.random()-0.5)*0.02, vy:0.02+Math.random()*0.05,
+  rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.06,
+  col:COLORS[(Math.random()*COLORS.length)|0], sway:Math.random()*6.28
+}); } }
+seed();
+function step(dt){ for(const p of parts){ p.sway+=dt*1.2;
+  p.x+=p.vx*dt + Math.sin(p.sway)*0.0008; p.y+=p.vy*dt; p.rot+=p.vr;
+  if(p.y>1.08){ p.y=-0.08; p.x=Math.random(); }
+  if(p.x<-0.1)p.x=1.1; if(p.x>1.1)p.x=-0.1;
+}}
+function setBadge(txt,on){ const b=document.getElementById('gpu-mode'); b.textContent=txt;
+  b.parentElement.querySelector('.led').style.background=on?'#7CFFB2':'var(--gold)'; }
+
+async function initWebGPU(){
+  if(!('gpu' in navigator)) throw new Error('no webgpu');
+  const adapter=await navigator.gpu.requestAdapter(); if(!adapter) throw new Error('no adapter');
+  const device=await adapter.requestDevice();
+  const ctx=bg.getContext('webgpu'); if(!ctx) throw new Error('no ctx');
+  const fmt=navigator.gpu.getPreferredCanvasFormat();
+  function res(){ bg.width=innerWidth*Math.min(devicePixelRatio||1,2); bg.height=innerHeight*Math.min(devicePixelRatio||1,2);
+    ctx.configure({device,format:fmt,alphaMode:'premultiplied'}); }
+  res(); addEventListener('resize',res);
+  const shader=device.createShaderModule({code:`
+    struct VOut{ @builtin(position) pos:vec4f, @location(0) uv:vec2f, @location(1) col:vec3f };
+    struct P{ posSize:vec4f, colRot:vec4f };
+    @group(0) @binding(0) var<storage,read> parts:array<P>;
+    @vertex fn vs(@builtin(vertex_index) vi:u32, @builtin(instance_index) ii:u32)->VOut{
+      var quad=array<vec2f,6>(vec2f(-1,-1),vec2f(1,-1),vec2f(-1,1),vec2f(-1,1),vec2f(1,-1),vec2f(1,1));
+      var q=quad[vi];
+      let p=parts[ii];
+      let a=p.colRot.w;
+      let r=mat2x2f(cos(a),-sin(a),sin(a),cos(a));
+      let sz=p.posSize.zw;
+      var local=r*(q*sz);
+      // center in clip space; posSize.xy is 0..1 screen
+      var center=vec2f(p.posSize.x*2.0-1.0, 1.0-p.posSize.y*2.0);
+      var o:VOut;
+      o.pos=vec4f(center+local,0.0,1.0);
+      o.uv=q; o.col=p.colRot.xyz;
+      return o;
+    }
+    @fragment fn fs(i:VOut)->@location(0) vec4f{
+      // rounded confetti flake
+      let d=length(i.uv);
+      let a=smoothstep(1.0,0.7,d);
+      return vec4f(i.col*a, a*0.9);
+    }`});
+  const buf=device.createBuffer({size:N*32,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+  const bgl=device.createBindGroupLayout({entries:[{binding:0,visibility:GPUShaderStage.VERTEX,buffer:{type:'read-only-storage'}}]});
+  const bind=device.createBindGroup({layout:bgl,entries:[{binding:0,resource:{buffer:buf}}]});
+  const pipe=device.createRenderPipeline({layout:device.createPipelineLayout({bindGroupLayouts:[bgl]}),
+    vertex:{module:shader,entryPoint:'vs'},
+    fragment:{module:shader,entryPoint:'fs',targets:[{format:fmt,blend:{color:{srcFactor:'src-alpha',dstFactor:'one-minus-src-alpha'},alpha:{srcFactor:'one',dstFactor:'one-minus-src-alpha'}}}]},
+    primitive:{topology:'triangle-list'}});
+  const arr=new Float32Array(N*8);
+  let last=performance.now();
+  function frame(now){ const dt=Math.min((now-last)/1000,0.05); last=now; step(dt);
+    const aspect=bg.width/bg.height;
+    for(let i=0;i<N;i++){ const p=parts[i]; const o=i*8;
+      arr[o]=p.x; arr[o+1]=p.y; arr[o+2]=(p.s/innerWidth); arr[o+3]=(p.s/innerHeight);
+      arr[o+4]=p.col[0]; arr[o+5]=p.col[1]; arr[o+6]=p.col[2]; arr[o+7]=p.rot; }
+    device.queue.writeBuffer(buf,0,arr);
+    const enc=device.createCommandEncoder();
+    const pass=enc.beginRenderPass({colorAttachments:[{view:ctx.getCurrentTexture().createView(),clearValue:{r:0,g:0,b:0,a:0},loadOp:'clear',storeOp:'store'}]});
+    pass.setPipeline(pipe); pass.setBindGroup(0,bind); pass.draw(6,N); pass.end();
+    device.queue.submit([enc.finish()]);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  setBadge('WebGPU ⚡ · WebGL planes',true);
+}
+
+function initWebGLConfetti(){
+  const gl=bg.getContext('webgl',{alpha:true,premultipliedAlpha:false,antialias:true});
+  if(!gl){ setBadge('CSS fallback',false); return; }
+  const vs=`attribute vec2 aQ; attribute vec4 aInst; attribute vec3 aCol; attribute float aRot; attribute vec2 aSize;
+    uniform vec2 uRes; varying vec2 vUv; varying vec3 vCol;
+    void main(){ vUv=aQ; vCol=aCol;
+      float c=cos(aRot),s=sin(aRot); mat2 r=mat2(c,-s,s,c);
+      vec2 local=r*(aQ*aSize);
+      vec2 center=vec2(aInst.x*2.0-1.0, 1.0-aInst.y*2.0);
+      gl_Position=vec4(center+local,0.0,1.0);
+    }`;
+  const fs=`precision mediump float; varying vec2 vUv; varying vec3 vCol;
+    void main(){ float d=length(vUv); float a=smoothstep(1.0,0.7,d); gl_FragColor=vec4(vCol*a,a*0.9);}`;
+  function mk(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const pr=gl.createProgram(); gl.attachShader(pr,mk(gl.VERTEX_SHADER,vs)); gl.attachShader(pr,mk(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(pr); gl.useProgram(pr);
+  const ext=gl.getExtension('ANGLE_instanced_arrays');
+  const QUAD=new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]);
+  const qb=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,qb); gl.bufferData(gl.ARRAY_BUFFER,QUAD,gl.STATIC_DRAW);
+  const aQ=gl.getAttribLocation(pr,'aQ'); gl.enableVertexAttribArray(aQ); gl.vertexAttribPointer(aQ,2,gl.FLOAT,false,0,0);
+  const aInst=gl.getAttribLocation(pr,'aInst'),aCol=gl.getAttribLocation(pr,'aCol'),aRot=gl.getAttribLocation(pr,'aRot'),aSize=gl.getAttribLocation(pr,'aSize');
+  const ib=gl.createBuffer();
+  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  function res(){ bg.width=innerWidth*Math.min(devicePixelRatio||1,2); bg.height=innerHeight*Math.min(devicePixelRatio||1,2); gl.viewport(0,0,bg.width,bg.height);} res(); addEventListener('resize',res);
+  const stride=8*4; const data=new Float32Array(N*8);
+  let last=performance.now();
+  function frame(now){ const dt=Math.min((now-last)/1000,0.05); last=now; step(dt);
+    for(let i=0;i<N;i++){ const p=parts[i]; const o=i*8;
+      data[o]=p.x;data[o+1]=p.y;data[o+2]=p.s/innerWidth;data[o+3]=p.s/innerHeight;
+      data[o+4]=p.col[0];data[o+5]=p.col[1];data[o+6]=p.col[2];data[o+7]=p.rot; }
+    gl.bindBuffer(gl.ARRAY_BUFFER,ib); gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER,qb); gl.enableVertexAttribArray(aQ); gl.vertexAttribPointer(aQ,2,gl.FLOAT,false,0,0);
+    if(ext){ ext.vertexAttribDivisorANGLE(aQ,0); }
+    gl.bindBuffer(gl.ARRAY_BUFFER,ib);
+    gl.enableVertexAttribArray(aInst); gl.vertexAttribPointer(aInst,4,gl.FLOAT,false,stride,0);
+    gl.enableVertexAttribArray(aCol); gl.vertexAttribPointer(aCol,3,gl.FLOAT,false,stride,16);
+    gl.enableVertexAttribArray(aRot); gl.vertexAttribPointer(aRot,1,gl.FLOAT,false,stride,28);
+    gl.enableVertexAttribArray(aSize); gl.vertexAttribPointer(aSize,2,gl.FLOAT,false,stride,8);
+    if(ext){ ext.vertexAttribDivisorANGLE(aInst,1);ext.vertexAttribDivisorANGLE(aCol,1);ext.vertexAttribDivisorANGLE(aRot,1);ext.vertexAttribDivisorANGLE(aSize,1); }
+    gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT);
+    if(ext){ ext.drawArraysInstancedANGLE(gl.TRIANGLES,0,6,N); }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  setBadge('WebGL confetti + planes',false);
+}
+
+initWebGPU().catch(()=>{ try{ initWebGLConfetti(); }catch(e){ setBadge('CSS fallback',false);} });
+</script>
+</body>
+</html>
