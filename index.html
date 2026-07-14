@@ -38,9 +38,11 @@
   body{font-family:var(--fbody);color:var(--bone);background:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 
   /* fixed layers */
-  #embers,#gl{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;}
+  #embers,#gl,#cursor{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;}
   #embers{z-index:2;}
   #gl{z-index:6;}
+  #cursor{z-index:60;}
+  body.flame-cursor,body.flame-cursor *{cursor:none;}
   .content{position:relative;z-index:3;}
 
   /* ambient dark vignette + warm glow */
@@ -165,6 +167,7 @@
 <body>
 <canvas id="embers"></canvas>
 <canvas id="gl"></canvas>
+<canvas id="cursor"></canvas>
 
 <nav id="nav">
   <div class="brand"><span class="pip"></span>España&nbsp;’26</div>
@@ -394,6 +397,47 @@ const glc=document.getElementById('gl');
 
 embersGPU().catch(()=>embers2D());
 updateFlame();addEventListener('resize',updateFlame);
+
+/* ---------- FLAME + SMOKE CURSOR (Pashi/Brock style) ---------- */
+(function flameCursor(){
+  const fine=matchMedia('(pointer:fine)').matches, reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(!fine||reduce)return;
+  const cv=document.getElementById('cursor'),ctx=cv.getContext('2d'),dpr=Math.min(devicePixelRatio||1,2);
+  function res(){cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}res();addEventListener('resize',res);
+  document.body.classList.add('flame-cursor');
+  let mx=innerWidth/2,my=innerHeight/2,fx=mx,fy=my,px=mx,py=my,active=false,emit=0,smk=0,last=performance.now();
+  const sparks=[],smoke=[];
+  addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;active=true;},{passive:true});
+  addEventListener('pointerdown',()=>{for(let i=0;i<20;i++)sparks.push(spark(mx,my,2.4));smoke.push(puff(mx,my));},{passive:true});
+  addEventListener('pointerleave',()=>active=false);addEventListener('blur',()=>active=false);
+  function spark(x,y,boost=1){const a=Math.random()*6.283,sp=(0.4+Math.random()*1.7)*boost;
+    return{x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-0.7,r:0.7+Math.random()*1.7,life:0,max:22+Math.random()*28,
+      c:Math.random()<0.5?[255,208,96]:[226,92,32]};}
+  function puff(x,y){return{x:x+(Math.random()-0.5)*8,y,r:5+Math.random()*7,vy:-(0.3+Math.random()*0.5),
+    vx:(Math.random()-0.5)*0.3,life:0,max:64+Math.random()*54,grow:0.28+Math.random()*0.28};}
+  (function tick(now){const dt=Math.min((now-last)/1000,0.05);last=now;
+    fx+=(mx-fx)*0.30;fy+=(my-fy)*0.30;const speed=Math.hypot(fx-px,fy-py);px=fx;py=fy;
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ctx.globalCompositeOperation='source-over';
+    for(let i=smoke.length-1;i>=0;i--){const s=smoke[i];s.life++;s.x+=s.vx;s.y+=s.vy;s.r+=s.grow;
+      if(s.life>=s.max){smoke.splice(i,1);continue;}const a=(1-s.life/s.max)*0.13;
+      const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);g.addColorStop(0,`rgba(124,115,107,${a})`);g.addColorStop(1,'rgba(124,115,107,0)');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.283);ctx.fill();}
+    ctx.globalCompositeOperation='lighter';
+    for(let i=sparks.length-1;i>=0;i--){const p=sparks[i];p.life++;p.vy+=0.02;p.x+=p.vx;p.y+=p.vy;p.vx*=0.98;
+      const a=1-p.life/p.max;if(a<=0){sparks.splice(i,1);continue;}const rr=p.r*2.2;
+      const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rr);g.addColorStop(0,`rgba(${p.c[0]},${p.c[1]},${p.c[2]},${a})`);g.addColorStop(1,`rgba(${p.c[0]},${p.c[1]},${p.c[2]},0)`);
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,rr,0,6.283);ctx.fill();}
+    const fl=6+Math.sin(now*0.03)*1.7;
+    const g=ctx.createRadialGradient(fx,fy-2,0,fx,fy,fl*2.5);
+    g.addColorStop(0,'rgba(255,246,222,0.95)');g.addColorStop(0.34,'rgba(240,162,59,0.85)');g.addColorStop(0.7,'rgba(210,74,31,0.5)');g.addColorStop(1,'rgba(179,6,10,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(fx,fy,fl*2.5,0,6.283);ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+    if(active){emit+=speed*0.55+0.7;while(emit>1){sparks.push(spark(fx,fy));emit--;}
+      smk+=speed*0.05+0.14;if(smk>1){smoke.push(puff(fx,fy));smk=0;}}
+    if(sparks.length>420)sparks.splice(0,sparks.length-420);
+    requestAnimationFrame(tick);})(last);
+})();
 </script>
 </body>
 </html>
